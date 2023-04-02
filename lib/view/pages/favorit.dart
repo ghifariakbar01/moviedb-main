@@ -6,11 +6,16 @@ import 'package:omdb/constant/color_pallete.dart';
 import 'package:omdb/provider/favorit_prov.dart';
 
 // ignore: must_be_immutable
-class FavoritPage extends ConsumerWidget {
+class FavoritPage extends ConsumerStatefulWidget {
   FavoritPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  FavoritPageState createState() => FavoritPageState();
+}
+
+class FavoritPageState extends ConsumerState<FavoritPage> {
+  @override
+  Widget build(BuildContext context) {
     final favorit = ref.watch(favoritProvider);
 
     //set data to provider
@@ -36,6 +41,7 @@ class FavoritPage extends ConsumerWidget {
                               startActionPane: ActionPane(
                                 // A motion is a widget used to control how the pane animates.
                                 motion: const ScrollMotion(),
+                                key: UniqueKey(),
 
                                 // A pane can dismiss the Slidable.
                                 dismissible: DismissiblePane(onDismissed: () {
@@ -72,6 +78,8 @@ class FavoritPage extends ConsumerWidget {
                                                   child: Text('No')),
                                               onTap: () {
                                                 Navigator.pop(context);
+
+                                                setState(() {});
                                               },
                                             )
                                           ],
@@ -137,6 +145,7 @@ class FavoritPage extends ConsumerWidget {
                               // The end action pane is the one at the right or the bottom side.
                               endActionPane: ActionPane(
                                 motion: const ScrollMotion(),
+                                key: UniqueKey(),
                                 children: [
                                   SlidableAction(
                                     // An action can be bigger than the others.
