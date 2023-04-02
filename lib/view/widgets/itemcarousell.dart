@@ -1,24 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:omdb/constant/constants.dart';
 
-class Item1 extends StatelessWidget {
-  Item1(
-      {Key? key,
-      required this.urlToImage,
-      required this.title,
-      required this.desc,
-      required this.url,
-      required this.released})
-      : super(key: key);
+class NowPlayWidget extends StatelessWidget {
+  const NowPlayWidget({
+    Key? key,
+    required this.urlToImage,
+  }) : super(key: key);
+
   final String urlToImage;
-  final String title, desc, url;
-  final DateTime released;
-  get geturlToImage => urlToImage;
-  get getTitle => title;
-  get getDesc => desc;
-  get getUrl => url;
-  get getReleased => released;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +17,7 @@ class Item1 extends StatelessWidget {
       borderRadius: BorderRadius.circular(16.0),
       child: CachedNetworkImage(
         height: MediaQuery.of(context).size.height * 0.2,
-        imageUrl: urlToImage,
+        imageUrl: hostImageUrl + urlToImage,
         fit: BoxFit.fill,
         errorWidget: (context, url, error) => Center(
             child: Image.asset(

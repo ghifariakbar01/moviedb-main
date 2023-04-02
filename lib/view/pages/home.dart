@@ -1,14 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:omdb/provider/favorit_prov.dart';
 import 'package:omdb/view/pages/movies/nowplay.dart';
 import 'package:omdb/view/pages/movies/popular.dart';
 import 'package:omdb/view/pages/movies/toprate.dart';
 import 'package:omdb/view/pages/movies/upcoming.dart';
-import 'package:provider/provider.dart';
-import '../../constant/color_pallete.dart';
 
 class HomePage extends StatefulWidget {
   @override

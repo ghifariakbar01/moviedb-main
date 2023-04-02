@@ -1,70 +1,72 @@
 // ignore_for_file: avoid_function_literals_in_foreach_calls
 
 import 'package:flutter/material.dart';
-import 'package:omdb/constant/constants.dart';
-import 'package:omdb/model/mod_upcoming.dart';
-import 'package:omdb/model/tv/tv_mod_popular.dart';
-import 'package:omdb/utils/api.helper.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:omdb/provider/now_play_prov.dart';
+import 'package:omdb/provider/popular_provider.dart';
+import 'package:omdb/view/widgets/carousell.dart';
 import 'package:omdb/view/widgets/itemcarousell.dart';
-import 'package:omdb/view/widgets/now_play_future.dart';
+import 'package:omdb/view/widgets/loading_widget.dart';
 
-class NowPlaying extends StatefulWidget {
+class NowPlaying extends ConsumerStatefulWidget {
   const NowPlaying({Key? key, required this.tv}) : super(key: key);
   final bool tv;
   @override
   _NowPlayingState createState() => _NowPlayingState();
 }
 
-class _NowPlayingState extends State<NowPlaying> {
-  List cardList = [];
-
-  late Future<UpcomingMod?> futures;
-
-  void addList() async {
-    futures = API.getNowPlaying();
-    await futures.then((value) => value?.results.forEach((element) {
-          cardList.add(Item1(
-            url: imageUrl + element.posterPath,
-            title: element.title,
-            desc: element.overview,
-            urlToImage: imageUrl + element.posterPath,
-            released: element.releaseDate,
-          ));
-        }));
-  }
-
-  late Future<TVPopular?> futures1;
-
-  //addListTv
-  void addListTv() async {
-    futures1 = API.getNowPlayingTv();
-    await futures1.then((value) => value?.results?.forEach((element) {
-          cardList.add(Item1(
-            url: imageUrl + "${element?.posterPath}",
-            title: "${element?.originalName}",
-            desc: "${element?.overview}",
-            urlToImage: imageUrl + "${element?.posterPath}",
-            released: DateTime.now(),
-          ));
-        }));
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    !widget.tv ? addList() : addListTv();
-  }
-
+class _NowPlayingState extends ConsumerState<NowPlaying> {
   @override
   Widget build(BuildContext context) {
+    final nowPlayingTv = ref.watch(tvNowPlayingProvider);
+    final tvNowPlay = ref.watch(tVnowPlayUrlProvider);
+
+    final nowPlaying = ref.watch(movieNowPlayingProvider);
+    final nowPlay = ref.watch(nowPlayUrlProvider);
+
     return !widget.tv
-        ? NowPlayFutureBuilder(
-            futures: futures,
-            cardList: cardList,
+        ? nowPlaying.when(
+            data: (data) {
+              if (data.results.isNotEmpty) {
+                final List<NowPlayWidget> list = [];
+
+                data.results.forEach((element) {
+                  list.add(NowPlayWidget(urlToImage: element.posterPath));
+                });
+
+                return CarousellWidget(
+                  carousellList: list,
+                  carousellResult: nowPlay,
+                );
+              } else {
+                return Container();
+              }
+            },
+            error: (e, s) => Center(
+              child: Text('Error $e $s'),
+            ),
+            loading: () => LoadingWidget(),
           )
-        : NowPlayFutureBuilder(
-            futures: futures1,
-            cardList: cardList,
-          );
+        : nowPlayingTv.when(
+            data: (data) {
+              if (data.results!.isNotEmpty) {
+                final List<NowPlayWidget> list = [];
+
+                data.results?.forEach((element) {
+                  list.add(NowPlayWidget(urlToImage: element.posterPath ?? ''));
+                });
+
+                return CarousellWidget(
+                  carousellList: list,
+                  carousellResult: tvNowPlay,
+                );
+              } else {
+                return Container();
+              }
+            },
+            error: (e, s) => Center(
+                  child: Text('Error $e $s'),
+                ),
+            loading: () => LoadingWidget());
   }
 }

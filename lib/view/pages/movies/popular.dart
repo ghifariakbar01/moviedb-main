@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:omdb/constant/constants.dart';
-import 'package:omdb/model/mod_popular.dart';
-import 'package:omdb/model/tv/tv_mod_popular.dart';
-import 'package:omdb/utils/api.helper.dart';
+import 'package:omdb/provider/popular_provider.dart';
 import 'package:omdb/view/widgets/allcards.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:omdb/view/widgets/loading_widget.dart';
 
-class Popular extends StatefulWidget {
+class Popular extends ConsumerStatefulWidget {
   const Popular({Key? key, required this.tv}) : super(key: key);
   final bool tv;
 
@@ -14,123 +13,55 @@ class Popular extends StatefulWidget {
   _PopularState createState() => _PopularState();
 }
 
-class _PopularState extends State<Popular> {
+class _PopularState extends ConsumerState<Popular> {
   @override
   Widget build(BuildContext context) {
+    final popularMovies = ref.watch(moviePopularProvider);
+    final popularTvs = ref.watch(tvPopularProvider);
+
     return !widget.tv
-        ? Container(
+        ? SizedBox(
             height: 100,
-            child: FutureBuilder<PopularMovies?>(
-              future: API.getPopular(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  PopularMovies topRateMod = snapshot.data!;
-                  return SingleChildScrollView(
-                    physics: BouncingScrollPhysics(),
+            child: popularMovies.when(
+                data: (data) {
+                  return ListView.builder(
+                    physics: const BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
-                    child: Container(
-                      child: FittedBox(
-                        fit: BoxFit.fill,
-                        child: Row(
-                          children: [
-                            ...topRateMod.results!.map((movies) {
-                              return AllCards(
-                                id: movies.id,
-                                title: movies.title,
-                                image: imageUrl + movies.backdropPath!,
-                                description: movies.overview,
-                              );
-                            }).take(10)
-                          ],
-                        ),
-                      ),
-                    ),
+                    itemCount: data!.results!.length,
+                    itemBuilder: (context, index) {
+                      return AllCards(
+                        id: data.results![index].id!.toInt(),
+                        title: data.results![index].title,
+                        image: hostImageUrl + data.results![index].posterPath!,
+                        description: data.results![index].overview,
+                        releaseDate: data.results![index].releaseDate,
+                      );
+                    },
                   );
-                } else {
-                  return Container();
-                }
-              },
-            ),
-          )
-        : Container(
+                },
+                error: (error, stackTrace) => const Text('Error'),
+                loading: () => const LoadingWidget()))
+        : SizedBox(
             height: 100,
-            child: FutureBuilder<TVPopular?>(
-              future: API.getTopRatedTv(),
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  TVPopular topRateMod = snapshot.data!;
-                  return SingleChildScrollView(
-                    physics: BouncingScrollPhysics(),
+            child: popularTvs.when(
+                data: (data) {
+                  return ListView.builder(
+                    physics: const BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
-                    child: Container(
-                      child: FittedBox(
-                        fit: BoxFit.fill,
-                        child: Row(
-                          children: [
-                            ...?topRateMod.results?.map((movies) {
-                              return AllCards(
-                                id: movies?.id,
-                                title: movies?.originalName,
-                                image: imageUrl + "${movies?.posterPath}",
-                                description: movies?.overview,
-                              );
-                            }).take(10)
-                          ],
-                        ),
-                      ),
-                    ),
+                    itemCount: data?.results?.length,
+                    itemBuilder: (context, index) {
+                      return AllCards(
+                        id: data?.results?[index].id ?? 0,
+                        title: data?.results?[index].originalName,
+                        image:
+                            '$hostImageUrl${data?.results?[index].posterPath ?? ''}',
+                        description: data?.results?[index].overview,
+                        releaseDate: data?.results?[index].firstAirDate ?? '',
+                      );
+                    },
                   );
-                } else {
-                  return Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: Colors.grey,
-                    child: SingleChildScrollView(
-                      physics: BouncingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      child: Container(
-                        child: FittedBox(
-                          fit: BoxFit.fill,
-                          child: Row(
-                            children: [
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              ),
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              ),
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              ),
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              ),
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }
-              },
-            ),
-          );
+                },
+                error: (error, stackTrace) => const Text('Error'),
+                loading: () => const LoadingWidget()));
   }
 }

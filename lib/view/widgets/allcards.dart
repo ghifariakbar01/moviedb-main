@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:omdb/constant/color_pallete.dart';
+import 'package:omdb/utils/helper.dart';
 import 'package:omdb/view/widgets/detailinfo.dart';
 
 class AllCards extends StatelessWidget {
@@ -11,21 +12,23 @@ class AllCards extends StatelessWidget {
       required this.image,
       required this.description,
       required this.title,
-      required this.id})
+      required this.id,
+      required this.releaseDate})
       : super(key: key);
   final int? id;
   final String? image;
   final String? description;
   final String? title;
+  final String? releaseDate;
 
   @override
   Widget build(BuildContext context) {
     return OpenContainer(
       openBuilder: (context, action) => DetailInfoPage(
         title: title,
-        content: description,
+        content: description ?? '',
         imageUrl: image,
-        date: DateTime.now(),
+        date: DateTime.parse(releaseDate ?? ""),
         url: image!,
       ),
       closedElevation: 0,
@@ -36,17 +39,20 @@ class AllCards extends StatelessWidget {
             SizedBox(
               height: 100,
               width: 150,
-              child: ColorFiltered(
-                colorFilter:
-                    const ColorFilter.mode(Colors.black54, BlendMode.darken),
-                child: CachedNetworkImage(
-                  imageUrl: image!,
-                  fit: BoxFit.fill,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: ColorFiltered(
+                  colorFilter:
+                      const ColorFilter.mode(Colors.black54, BlendMode.darken),
+                  child: CachedNetworkImage(
+                    imageUrl: image!,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
             Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 //crreate title text
@@ -81,7 +87,9 @@ class AllCards extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        description!.substring(0, 15) + "...",
+                        description != null && description!.isNotEmpty
+                            ? description!.substring(0, 15)
+                            : '',
                         maxLines: 5,
                         style: TextStyle(
                             fontFamily: "Proppins",
@@ -95,25 +103,21 @@ class AllCards extends StatelessWidget {
                 SizedBox(
                   height: 15,
                 ),
-                Row(
-                  children: [
-                    Container(
-                      height: 25,
-                      width: 70,
-                      child: Center(
-                        child: Text(
-                          "Detail",
-                          style: TextStyle(
-                            fontSize: 12,
-                          ),
-                        ),
+                Container(
+                  height: 25,
+                  width: 70,
+                  child: Center(
+                    child: Text(
+                      "Detail",
+                      style: TextStyle(
+                        fontSize: 12,
                       ),
-                      margin: EdgeInsets.only(top: 10, left: 16, right: 10),
-                      decoration: BoxDecoration(
-                          color: ColorPalette.textColor,
-                          borderRadius: BorderRadius.all(Radius.circular(20))),
                     ),
-                  ],
+                  ),
+                  margin: EdgeInsets.only(top: 10, left: 16, right: 10),
+                  decoration: BoxDecoration(
+                      color: ColorPalette.textColor,
+                      borderRadius: BorderRadius.all(Radius.circular(20))),
                 ),
               ],
             ),

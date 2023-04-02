@@ -6,7 +6,7 @@ import 'package:omdb/model/tv/tv_mod_popular.dart';
 import 'package:omdb/utils/api.helper.dart';
 import 'package:omdb/utils/helper.dart';
 import 'package:omdb/view/widgets/allcards.dart';
-import 'package:shimmer/shimmer.dart';
+import 'package:omdb/view/widgets/loading_widget.dart';
 
 class Upcoming extends StatefulWidget {
   const Upcoming({Key? key, required this.tv}) : super(key: key);
@@ -18,167 +18,58 @@ class Upcoming extends StatefulWidget {
 class _UpcomingState extends State<Upcoming> {
   @override
   Widget build(BuildContext context) {
-    API api = API();
-
     return !widget.tv
-        ? Container(
+        ? SizedBox(
             height: 100,
             child: FutureBuilder<UpcomingMod?>(
               future: API.getUpcoming(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   UpcomingMod upcomingMod = snapshot.data!;
-                  return SingleChildScrollView(
-                    physics: BouncingScrollPhysics(),
+                  return ListView.builder(
+                    physics: const BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
-                    child: Container(
-                      child: FittedBox(
-                        fit: BoxFit.fill,
-                        child: Row(
-                          children: [
-                            ...upcomingMod.results.map((movies) {
-                              return AllCards(
-                                id: movies.id,
-                                title: movies.title,
-                                image: imageUrl + movies.posterPath,
-                                description:
-                                    Helper.formatDate(movies.releaseDate),
-                              );
-                            }).take(10)
-                          ],
-                        ),
-                      ),
-                    ),
+                    itemCount: upcomingMod.results.length,
+                    itemBuilder: (context, index) {
+                      return AllCards(
+                          id: upcomingMod.results[index].id,
+                          title: upcomingMod.results[index].title,
+                          image: hostImageUrl +
+                              upcomingMod.results[index].posterPath,
+                          description: upcomingMod.results[index].overview,
+                          releaseDate: upcomingMod.results[index].releaseDate);
+                    },
                   );
                 } else {
-                  return Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: Colors.grey,
-                    child: SingleChildScrollView(
-                      physics: BouncingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      child: Container(
-                        child: FittedBox(
-                          fit: BoxFit.fill,
-                          child: Row(
-                            children: [
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              ),
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              ),
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              ),
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              ),
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
+                  return const LoadingWidget();
                 }
               },
             ),
           )
         : SizedBox(
             height: 100,
-            child: FutureBuilder<TVPopular?>(
+            child: FutureBuilder<PopularTVModel?>(
               future: API.getTvOnTheAir(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  TVPopular upcomingMod = snapshot.data!;
-                  return SingleChildScrollView(
+                  PopularTVModel data = snapshot.data!;
+                  return ListView.builder(
                     physics: const BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
-                    child: FittedBox(
-                      fit: BoxFit.fill,
-                      child: Row(
-                        children: [
-                          ...upcomingMod.results!
-                              .map((movies) {
-                                return AllCards(
-                                  id: movies?.id,
-                                  title: movies?.originalName,
-                                  image: imageUrl + "${movies?.posterPath}",
-                                  description: movies?.overview,
-                                );
-                              })
-                              .take(3)
-                              .toList()
-                        ],
-                      ),
-                    ),
+                    itemCount: data.results!.length,
+                    itemBuilder: (context, index) {
+                      return AllCards(
+                        id: data.results?[index].id ?? 0,
+                        title: data.results?[index].originalName,
+                        image:
+                            '$hostImageUrl${data.results?[index].posterPath ?? ''}',
+                        description: data.results?[index].overview,
+                        releaseDate: data.results?[index].firstAirDate ?? '',
+                      );
+                    },
                   );
                 } else {
-                  return Shimmer.fromColors(
-                    baseColor: Colors.white,
-                    highlightColor: Colors.grey,
-                    child: SingleChildScrollView(
-                      physics: BouncingScrollPhysics(),
-                      scrollDirection: Axis.horizontal,
-                      child: Container(
-                        child: FittedBox(
-                          fit: BoxFit.fill,
-                          child: Row(
-                            children: [
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              ),
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              ),
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              ),
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              ),
-                              AllCards(
-                                id: 1,
-                                title: "Dummy",
-                                image: "Dummy",
-                                description: "Dummy",
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
+                  return const LoadingWidget();
                 }
               },
             ),

@@ -39,22 +39,22 @@ class _SearchMoviesState extends State<SearchMovies> {
                 onChanged: (String str) {
                   data = API.searchMoviesByName(str);
                   setState(() {
-                    print("string is $str");
                     data = API.searchMoviesByName(str);
-                    print("data is $data");
                   });
                 },
                 onSubmitted: (String str) async {
                   data = await API.searchMoviesByName(str);
                   setState(() {
-                    print("string is $str");
                     data = API.searchMoviesByName(str);
-                    print("data is $data");
                   });
                 },
                 decoration: InputDecoration(
                   hintText: 'Search Movies',
-                  border: OutlineInputBorder(
+                  focusColor: ColorPalette.themeColor,
+                  hoverColor: ColorPalette.themeColor,
+                  fillColor: ColorPalette.themeColor,
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: ColorPalette.themeColor),
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -80,31 +80,32 @@ class _SearchMoviesState extends State<SearchMovies> {
                                           CachedNetworkImage(
                                             height: 100,
                                             imageUrl:
-                                                imageUrl + "${e?.posterPath}",
+                                                "$hostImageUrl${e?.posterPath}",
                                             errorWidget:
                                                 (context, url, error) =>
                                                     const Icon(Icons.error),
                                           ),
-                                          Container(
-                                            height: 100,
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width -
-                                                150,
-                                            child: FittedBox(
-                                                fit: BoxFit.fitWidth,
-                                                child: e?.overview != null
-                                                    ? Text(
-                                                        "   ${e?.overview}"
-                                                                .substring(
-                                                                    0, 50) +
-                                                            "...",
-                                                        maxLines: 5,
-                                                      )
-                                                    : const Text(
-                                                        "empty",
-                                                        maxLines: 5,
-                                                      )),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0),
+                                            child: SizedBox(
+                                              height: 100,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width -
+                                                  150,
+                                              child: e?.overview != null
+                                                  ? Text(
+                                                      "${e?.overview}...",
+                                                      maxLines: 5,
+                                                      textAlign:
+                                                          TextAlign.justify,
+                                                    )
+                                                  : const Text(
+                                                      "empty",
+                                                      maxLines: 5,
+                                                    ),
+                                            ),
                                           ),
                                         ],
                                       )),
@@ -113,12 +114,12 @@ class _SearchMoviesState extends State<SearchMovies> {
                                           title: e?.name,
                                           content: e?.overview,
                                           imageUrl:
-                                              imageUrl + "${e?.posterPath}",
+                                              "$hostImageUrl${e?.posterPath}",
                                           date: DateTime.now(),
-                                          url: imageUrl + "${e?.posterPath}"),
+                                          url: "$hostImageUrl${e?.posterPath}"),
                                 ),
                               )
-                              .take(10)
+                              .take(data.results!.length)
                               .toList(),
                         ],
                       );

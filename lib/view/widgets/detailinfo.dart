@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:intl/intl.dart';
 import 'package:omdb/constant/color_pallete.dart';
+import 'package:omdb/constant/constants.dart';
 import 'package:omdb/model/mod_favorit.dart';
 import 'package:omdb/provider/favorit_prov.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -54,20 +55,20 @@ class _DetailInfoPageState extends ConsumerState<DetailInfoPage> {
 
     bool isFavorit = favorit.any((element) => element.title == widget.title);
 
-    _imageUrl = widget.imageUrl!;
+    _imageUrl = hostImageUrl + widget.imageUrl!;
     _title = widget.title!;
     _content = widget.content!;
     _date = widget.date;
 
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton:
-          //add to favorite,
-          FloatingActionButton(
+      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+      floatingActionButton: FloatingActionButton(
         backgroundColor: ColorPalette.themeColor,
         foregroundColor: isFavorit ? ColorPalette.textColor : Colors.white,
         onPressed: () {
           Favorit favorit = Favorit(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
             title: _title,
             description: _content,
             image: _imageUrl,
@@ -78,8 +79,6 @@ class _DetailInfoPageState extends ConsumerState<DetailInfoPage> {
               ? ref.read(favoritProvider.notifier).addFavorit(favorit)
               : ref.read(favoritProvider.notifier).removeFavorit(favorit);
 
-          setState(() {});
-          //show toast
           Fluttertoast.showToast(
               msg: !isFavorit ? "Added to Favorite" : "Removed from Favorite",
               toastLength: Toast.LENGTH_SHORT,
@@ -113,8 +112,8 @@ class _DetailInfoPageState extends ConsumerState<DetailInfoPage> {
                         child: CachedNetworkImage(
                           imageUrl: _imageUrl, //baseUrl +
                           fit: BoxFit.cover,
-                          placeholder: (context, url) => const Center(
-                              child: const CircularProgressIndicator()),
+                          placeholder: (context, url) =>
+                              const Center(child: CircularProgressIndicator()),
                           errorWidget: (context, url, error) => Center(
                               child: Image.asset(
                             "assets/carousell_galeri.png",
@@ -127,16 +126,6 @@ class _DetailInfoPageState extends ConsumerState<DetailInfoPage> {
                     ),
                   ),
                 ],
-              ),
-              title: AnimatedOpacity(
-                opacity: 1.0,
-                duration: const Duration(milliseconds: 150),
-                child: Text(
-                  titleMore + "...",
-                  maxLines: 1,
-                  style: const TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
               ),
             ),
           ),
@@ -180,13 +169,13 @@ class _DetailInfoPageState extends ConsumerState<DetailInfoPage> {
                       thickness: 1,
                     ),
                   ),
-                  // Container(
-                  //   margin: const EdgeInsets.only(
-                  //       top: 5, right: 8, left: 8, bottom: 10),
-                  //   child: Html(
-                  //     data: _content,
-                  //   ),
-                  // ),
+                  Container(
+                    margin: const EdgeInsets.only(
+                        top: 5, right: 8, left: 8, bottom: 10),
+                    child: Text(
+                      _content,
+                    ),
+                  ),
                 ],
               ),
             )

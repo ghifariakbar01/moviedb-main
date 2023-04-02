@@ -12,7 +12,7 @@ class FavoritStateNotifier extends StateNotifier<List<Favorit>> {
   get favorit => state;
 
   void addFavorit(Favorit value) {
-    state = [...state, value];
+    state = [value, ...state];
   }
 
   void removeFavorit(Favorit value) {

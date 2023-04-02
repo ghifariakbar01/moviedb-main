@@ -1,5 +1,5 @@
 const String hostDomain = "https://api.themoviedb.org/3";
-const String imageUrl = "https://image.tmdb.org/t/p/original/";
+const String hostImageUrl = "https://image.tmdb.org/t/p/original/";
 const String appTitle = "Elemes Movie";
 const String mobileUA =
     "Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36";

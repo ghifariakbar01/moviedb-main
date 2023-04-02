@@ -64,9 +64,7 @@ class TVPageState extends State<TVPage> {
               Divider(
                 title: "Popular TV Shows",
               ),
-              TopRated(
-                tv: true,
-              ),
+              Popular(tv: true),
               Divider(
                 title: "TV On The AIr",
               ),
@@ -80,7 +78,9 @@ class TVPageState extends State<TVPage> {
               Divider(
                 title: "Top Rated TV Show",
               ),
-              Popular(tv: true),
+              TopRated(
+                tv: true,
+              ),
               SizedBox(
                 height: 25,
               )
