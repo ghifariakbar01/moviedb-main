@@ -87,9 +87,7 @@ class AllCards extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Text(
-                        description != null && description!.isNotEmpty
-                            ? description!.substring(0, 15)
-                            : '',
+                        Helper.formatDate(DateTime.parse(releaseDate ?? '')),
                         maxLines: 5,
                         style: TextStyle(
                             fontFamily: "Proppins",

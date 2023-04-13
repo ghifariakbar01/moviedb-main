@@ -51,11 +51,11 @@ class HomeWidgetState extends State<HomeWidget> with TickerProviderStateMixin {
             ),
             content: const Text('Anda akan keluar dari Aplikasi'),
             actions: [
-              FlatButton(
+              TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
                 child: const Text('Tidak'),
               ),
-              FlatButton(
+              TextButton(
                 onPressed: () => SystemNavigator.pop(),
                 child: const Text('Iya'),
               ),

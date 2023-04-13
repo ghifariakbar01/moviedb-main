@@ -22,8 +22,6 @@ class _TopRatedState extends ConsumerState<TopRated> {
 
   @override
   Widget build(BuildContext context) {
-    final tvPopular = ref.watch(tvPopularProvider);
-
     return !widget.tv
         ? SizedBox(
             height: 100,

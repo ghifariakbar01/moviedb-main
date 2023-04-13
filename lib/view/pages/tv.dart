@@ -34,11 +34,11 @@ class TVPageState extends State<TVPage> {
             ),
             content: const Text('Anda akan keluar dari Aplikasi'),
             actions: [
-              FlatButton(
+              TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
                 child: const Text('Tidak'),
               ),
-              FlatButton(
+              TextButton(
                 onPressed: () => SystemNavigator.pop(),
                 child: const Text('Iya'),
               ),
